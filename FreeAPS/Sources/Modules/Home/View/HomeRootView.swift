@@ -31,6 +31,16 @@ extension Home {
             sortDescriptors: [NSSortDescriptor(key: "date", ascending: false)]
         ) var fetchedPercent: FetchedResults<Override>
 
+        @FetchRequest(
+            entity: TempTargets.entity(),
+            sortDescriptors: [NSSortDescriptor(key: "date", ascending: false)]
+        ) var sliderTTpresets: FetchedResults<TempTargets>
+
+        @FetchRequest(
+            entity: TempTargetsSlider.entity(),
+            sortDescriptors: [NSSortDescriptor(key: "date", ascending: false)]
+        ) var enactedSliderTT: FetchedResults<TempTargetsSlider>
+
         private var numberFormatter: NumberFormatter {
             let formatter = NumberFormatter()
             formatter.numberStyle = .decimal
@@ -188,63 +198,53 @@ extension Home {
                 }
 
                 if let tempTarget = state.tempTarget {
-                    Text(tempTarget.displayName).font(.caption).foregroundColor(.secondary)
-                    if state.units == .mmolL {
-                        Text(
-                            targetFormatter
-                                .string(from: (tempTarget.targetBottom?.asMmolL ?? 0) as NSNumber)!
-                        )
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        if tempTarget.targetBottom != tempTarget.targetTop {
-                            Text("-").font(.caption)
-                                .foregroundColor(.secondary)
-                            Text(
-                                targetFormatter
-                                    .string(from: (tempTarget.targetTop?.asMmolL ?? 0) as NSNumber)! +
-                                    " \(state.units.rawValue)"
-                            )
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        } else {
-                            Text(state.units.rawValue).font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                    let target_ = tempTarget.targetBottom ?? 0
+                    let unitString = targetFormatter.string(from: (tempTarget.targetBottom?.asMmolL ?? 0) as NSNumber)!
 
-                    } else {
-                        Text(targetFormatter.string(from: (tempTarget.targetBottom ?? 0) as NSNumber)!)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        if tempTarget.targetBottom != tempTarget.targetTop {
-                            Text("-").font(.caption)
-                                .foregroundColor(.secondary)
-                            Text(
-                                targetFormatter
-                                    .string(from: (tempTarget.targetTop ?? 0) as NSNumber)! + " \(state.units.rawValue)"
+                    if sliderTTpresets.first?.active ?? false {
+                        let hbt = sliderTTpresets.first?.hbt ?? 0
+                        let string = (tirFormatter.string(from: state.infoPanelTTPercentage(hbt, target_) as NSNumber) ?? "") +
+                            " %"
+                        let rawString = state.units.rawValue + (string == "0" ? "" : string + " %")
+
+                        Text(
+                            tempTarget.displayName + " " + (
+                                state.units == .mmolL ? (unitString + " mmol/L " + string) : rawString
                             )
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        } else {
-                            Text(state.units.rawValue).font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                        )
+                        .font(.caption).foregroundColor(.secondary)
+                    } else if enactedSliderTT.first?.enabled ?? false {
+                        let hbt = enactedSliderTT.first?.hbt ?? 0
+                        let string = (tirFormatter.string(from: state.infoPanelTTPercentage(hbt, target_) as NSNumber) ?? "") +
+                            " %"
+                        let rawString = state.units.rawValue + (string == "0" ? "" : string + " %")
+
+                        Text(
+                            tempTarget.displayName + " " +
+                                (state.units == .mmolL ? (unitString + " mmol/L " + string) : rawString)
+                        )
+                        .font(.caption).foregroundColor(.secondary)
+                    } else {
+                        Text(
+                            tempTarget.displayName + " " + (
+                                state.units == .mmolL ? (unitString + " mmol/L ") : state.units.rawValue
+                            )
+                        ).font(.caption).foregroundColor(.secondary)
                     }
                 }
 
                 Spacer()
 
-                Text(
-                    (fetchedPercent.first?.enabled ?? false) ?
-                        "\((fetchedPercent.first?.percentage ?? 100).formatted(.number)) % " : ""
-                )
-                .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.orange)
-                .padding(.trailing, 2)
                 if fetchedPercent.first?.enabled ?? false {
                     Text(
-                        (tirFormatter.string(from: (fetchedPercent.first?.duration ?? 0) as NSNumber) ?? "") == "0" ?
-                            "Perpetual" :
-                            (tirFormatter.string(from: (fetchedPercent.first?.duration ?? 0) as NSNumber) ?? "") + " min"
+                        "\((fetchedPercent.first?.percentage ?? 100).formatted(.number)) %" +
+                            (
+                                (tirFormatter.string(from: (fetchedPercent.first?.duration ?? 0) as NSNumber) ?? "") == "0" ?
+                                    "" :
+                                    ", " +
+                                    (tirFormatter.string(from: (fetchedPercent.first?.duration ?? 0) as NSNumber) ?? "") +
+                                    " min"
+                            )
                     )
                     .font(.system(size: 12))
                     .foregroundColor(.orange)
