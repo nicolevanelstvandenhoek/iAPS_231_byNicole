@@ -49,12 +49,19 @@ extension AddTempTarget {
                     try? self.coredataContext.save()
                 }
                 saveSettings = true
+            } else {
+                coredataContext.performAndWait {
+                    let saveToCoreData = TempTargets(context: coredataContext)
+                    saveToCoreData.active = false
+                    saveToCoreData.date = Date()
+                    try? coredataContext.save()
+                }
             }
             var highTarget = lowTarget
 
             if units == .mmolL, !viewPercantage {
-                lowTarget = lowTarget.asMgdL
-                highTarget = highTarget.asMgdL
+                lowTarget = Decimal(round(Double(lowTarget.asMgdL)))
+                highTarget = lowTarget
             }
 
             let entry = TempTarget(
@@ -83,6 +90,7 @@ extension AddTempTarget {
                 let setHBT = TempTargetsSlider(context: self.coredataContext)
                 setHBT.enabled = false
                 setHBT.date = Date()
+
                 try? self.coredataContext.save()
             }
         }
@@ -97,11 +105,12 @@ extension AddTempTarget {
                 lowTarget = computeTarget()
                 saveSettings = true
             }
+
             var highTarget = lowTarget
 
             if units == .mmolL, !viewPercantage {
-                lowTarget = lowTarget.asMgdL
-                highTarget = highTarget.asMgdL
+                lowTarget = Decimal(round(Double(lowTarget.asMgdL)))
+                highTarget = lowTarget
             }
 
             let entry = TempTarget(
@@ -181,7 +190,7 @@ extension AddTempTarget {
                 ratio = maxValue
                 target = (c / ratio) - c + 100
             }
-            return target
+            return Decimal(Double(target))
         }
     }
 }
