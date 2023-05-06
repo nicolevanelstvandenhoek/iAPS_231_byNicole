@@ -986,7 +986,7 @@ final class BaseAPSManager: APSManager, Injectable {
                                 bgArray_30 = bgArrayForTIR
                                 bgArray_30_ = bgArray
                             }
-                            if (firstElementTime - currentIndexTime).timeInterval <= 7.776E7 { // 30 days
+                            if (firstElementTime - currentIndexTime).timeInterval <= 7.776E7 { // 90 days
                                 bg_90 = bg / nr_bgs
                                 bgArray_90 = bgArrayForTIR
                                 bgArray_90_ = bgArray
@@ -1011,12 +1011,10 @@ final class BaseAPSManager: APSManager, Injectable {
                     var i = -1
                     var lastIndex = false
                     let endIndex = array.count - 1
+
                     var hypoLimit = settingsManager.settings.low
                     var hyperLimit = settingsManager.settings.high
-                    if units == .mmolL {
-                        hypoLimit = hypoLimit / 0.0555
-                        hyperLimit = hyperLimit / 0.0555
-                    }
+
                     var full_time = 0.0
                     if endIndex > 0 {
                         full_time = (array[0].date_ - array[endIndex].date_).timeInterval
