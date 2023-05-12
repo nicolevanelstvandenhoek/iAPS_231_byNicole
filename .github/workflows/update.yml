@@ -36,7 +36,7 @@ jobs:
 
     # Step 2: run the sync action
     - name: Sync upstream changes
-      if: github.repository_owner !== 'Artificial-Pancreas' # do not run the upstream sync action on the upstream repository
+      if: github.repository_owner != 'Artificial-Pancreas' # do not run the upstream sync action on the upstream repository
       id: sync
       uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
       with:
