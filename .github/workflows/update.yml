@@ -15,7 +15,7 @@ on:
 env:
   UPSTREAM_REPO: Artificial-Pancreas/iAPS
   UPSTREAM_BRANCH: dev # branch on upstream repository to sync from
-  TARGET_BRANCH: $GITHUB_REF_NAME # target branch on fork to be kept in sync, and target branch on upstream to be kept alive (relpace with specific branch name if needed)
+  TARGET_BRANCH: ${{ github.ref_name }} # target branch on fork to be kept in sync, and target branch on upstream to be kept alive (relpace with specific branch name if needed)
 
 jobs:
   check_latest_from_upstream:
