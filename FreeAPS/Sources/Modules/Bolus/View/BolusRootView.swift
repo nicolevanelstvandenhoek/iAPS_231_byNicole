@@ -95,7 +95,7 @@ extension Bolus {
                         Alert(
                             title: Text("Are you sure?"),
                             message: Text(
-                                "Add " + formatter
+                                NSLocalizedString("Add", comment: "Add insulin without bolusing alert") + " " + formatter
                                     .string(from: state.amount as NSNumber)! + NSLocalizedString(" U", comment: "Insulin unit") +
                                     NSLocalizedString(" without bolusing", comment: "Add insulin without bolusing alert")
                             ),
@@ -194,6 +194,10 @@ extension Bolus {
                             Text("%").foregroundColor(.secondary)
                         }
                     }
+                    HStack {
+                        Text("Formula =")
+                        Text("(Eventual Glucose - Target) / ISF")
+                    }.foregroundColor(.secondary).italic().padding(.top, 5)
                 }
                 .font(.footnote)
                 .padding(.top, 10)
@@ -204,11 +208,10 @@ extension Bolus {
                         " U",
                         comment: "Unit in number of units delivered (keep the space character!)"
                     )
-                    Text("(Eventual Glucose - Target) / ISF =").font(.callout).italic()
                     let color: Color = (state.percentage != 100 && state.insulin > 0) ? .secondary : .blue
                     let fontWeight: Font.Weight = (state.percentage != 100 && state.insulin > 0) ? .regular : .bold
                     HStack {
-                        Text(" = ").font(.callout)
+                        Text(NSLocalizedString("Insulin recommended", comment: "") + ":").font(.callout)
                         Text(state.insulin.formatted() + unit).font(.callout).foregroundColor(color).fontWeight(fontWeight)
                     }
                     if state.percentage != 100, state.insulin > 0 {
@@ -251,33 +254,22 @@ extension Bolus {
             )
         }
 
-        // Localize the Oref0 error/warning strings
+        // Localize the Oref0 error/warning strings. The default should never be returned
         private func alertString() -> String {
             switch state.errorString {
-            case 1:
+            case 1,
+                 2:
                 return NSLocalizedString(
-                    "Predicted Glucose, ",
+                    "Eventual Glucose > Target Glucose, but glucose is predicted to first drop down to ",
                     comment: "Bolus pop-up / Alert string. Make translations concise!"
                 ) + state.minGuardBG
                     .formatted(.number.grouping(.never).rounded().precision(.fractionLength(fractionDigits))) + " " + state.units
                     .rawValue + ", " +
                     NSLocalizedString(
-                        "is predicted below threshold ",
+                        "which is below your Threshold (",
                         comment: "Bolus pop-up / Alert string. Make translations concise!"
                     ) + state
-                    .threshold.formatted(.number.grouping(.never).rounded().precision(.fractionLength(fractionDigits))) + "!"
-            case 2:
-                return NSLocalizedString(
-                    "Predicted Glucose, ",
-                    comment: "Bolus pop-up / Alert string. Make translations concise!"
-                ) + state.minGuardBG
-                    .formatted(.number.grouping(.never).rounded().precision(.fractionLength(fractionDigits))) + " " + state.units
-                    .rawValue + ", " +
-                    NSLocalizedString(
-                        "is below Threshold of ",
-                        comment: "Bolus pop-up / Alert string. Make translations concise!"
-                    ) + state
-                    .threshold.formatted(.number.grouping(.never).rounded().precision(.fractionLength(fractionDigits)))
+                    .threshold.formatted(.number.grouping(.never).rounded().precision(.fractionLength(fractionDigits))) + ")"
             case 3:
                 return NSLocalizedString(
                     "Eventual Glucose > Target Glucose, but glucose is climbing slower than expected. Expected: ",
@@ -289,7 +281,7 @@ extension Bolus {
                     .minDelta.formatted(.number.grouping(.never).rounded().precision(.fractionLength(fractionDigits)))
             case 4:
                 return NSLocalizedString(
-                    "Eventual Glucose > Target Glucose, but glucose is falling slower than expected. Expected: ",
+                    "Eventual Glucose > Target Glucose, but glucose is falling faster than expected. Expected: ",
                     comment: "Bolus pop-up / Alert string. Make translations concise!"
                 ) +
                     state.expectedDelta
@@ -307,7 +299,7 @@ extension Bolus {
                     .minDelta.formatted(.number.grouping(.never).rounded().precision(.fractionLength(fractionDigits)))
             case 6:
                 return NSLocalizedString(
-                    "Minimum predicted Glucose is ",
+                    "Eventual Glucose > Target Glucose, but glucose is predicted to first drop down to ",
                     comment: "Bolus pop-up / Alert string. Make translations concise!"
                 ) + state
                     .minPredBG
