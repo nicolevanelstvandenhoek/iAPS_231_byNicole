@@ -72,14 +72,16 @@ extension Bolus {
                                 autofocus: true,
                                 cleanInput: true
                             )
-                            Text("U").foregroundColor(.secondary)
+                            Text(!(state.amount > state.maxBolus) ? "U" : "😵").foregroundColor(.secondary)
                         }
                     }
                     header: { Text("Bolus") }
                     Section {
                         Button { state.add() }
-                        label: { Text("Enact bolus") }
-                            .disabled(state.amount <= 0)
+                        label: { Text(!(state.amount > state.maxBolus) ? "Enact bolus" : "Max Bolus exceeded!") }
+                            .disabled(
+                                state.amount <= 0 || state.amount > state.maxBolus
+                            )
                     }
                     Section {
                         if waitForSuggestion {
@@ -88,7 +90,9 @@ extension Bolus {
                         } else {
                             Button { isAddInsulinAlertPresented = true }
                             label: { Text("Add insulin without actually bolusing") }
-                                .disabled(state.amount <= 0)
+                                .disabled(
+                                    state.amount <= 0 || state.amount > state.maxBolus
+                                )
                         }
                     }
                     .alert(isPresented: $isAddInsulinAlertPresented) {
