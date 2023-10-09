@@ -13,7 +13,6 @@ extension NightscoutConfig {
         @Injected() private var healthKitManager: HealthKitManager!
         @Injected() private var cgmManager: FetchGlucoseManager!
         @Injected() private var storage: FileStorage!
-        @Injected() var unlockmanager: UnlockManager!
 
         let coredataContext = CoreDataStack.shared.persistentContainer.viewContext
 
@@ -28,12 +27,17 @@ extension NightscoutConfig {
         @Published var useLocalSource = false
         @Published var localPort: Decimal = 0
         @Published var units: GlucoseUnits = .mmolL
-        @Published var importedHasRun = false
+        @Published var dia: Decimal = 6
+        @Published var maxBasal: Decimal = 2
+        @Published var maxBolus: Decimal = 10
 
         override func subscribe() {
             url = keychain.getValue(String.self, forKey: Config.urlKey) ?? ""
             secret = keychain.getValue(String.self, forKey: Config.secretKey) ?? ""
             units = settingsManager.settings.units
+            dia = settingsManager.pumpSettings.insulinActionCurve
+            maxBasal = settingsManager.pumpSettings.maxBasal
+            maxBolus = settingsManager.pumpSettings.maxBolus
 
             subscribeSetting(\.isUploadEnabled, on: $isUploadEnabled) { isUploadEnabled = $0 }
             subscribeSetting(\.useLocalGlucoseSource, on: $useLocalSource) { useLocalSource = $0 }
@@ -84,16 +88,6 @@ extension NightscoutConfig {
                 return nil
             }
             return NightscoutAPI(url: url, secret: secret)
-        }
-
-        func startImport() {
-            unlockmanager.unlock()
-                .sink { _ in } receiveValue: { [weak self] _ in
-                    guard let self = self else { return }
-                    importSettings()
-                    importedHasRun = true
-                }
-                .store(in: &lifetime)
         }
 
         func importSettings() {
@@ -209,6 +203,13 @@ extension NightscoutConfig {
                         self.storage.save(basals, as: OpenAPS.Settings.basalProfile)
                         self.storage.save(sensitivitiesProfile, as: OpenAPS.Settings.insulinSensitivities)
                         self.storage.save(targetsProfile, as: OpenAPS.Settings.bgTargets)
+                        // DIA. Save if changed.
+                        let dia = fetchedProfile.dia
+                        if dia != self.dia {
+                            let file = PumpSettings(insulinActionCurve: dia, maxBolus: self.maxBolus, maxBasal: self.maxBasal)
+                            self.storage.save(file, as: OpenAPS.Settings.settings)
+                            debug(.nightscout, "DIA setting updated to " + dia.description + " after a NS import.")
+                        }
 
                         group.leave()
 
