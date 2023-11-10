@@ -9,8 +9,8 @@ name: 'Auto-update'
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron:  '0 4 * * *' # scheduled at 04:00 UTC every day
+  #schedule:
+    #- cron:  '0 4 * * *' # scheduled at 04:00 UTC every day
 
 env:
   UPSTREAM_REPO: Artificial-Pancreas/iAPS
