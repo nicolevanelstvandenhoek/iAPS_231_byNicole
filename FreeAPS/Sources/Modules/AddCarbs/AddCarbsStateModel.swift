@@ -22,6 +22,8 @@ extension AddCarbs {
         @Published var summary: String = ""
         @Published var skipBolus: Bool = false
 
+        let now = Date.now
+
         let coredataContext = CoreDataStack.shared.persistentContainer.viewContext
 
         override func subscribe() {
@@ -31,7 +33,7 @@ extension AddCarbs {
             useFPUconversion = settingsManager.settings.useFPUconversion
         }
 
-        func add() {
+        func add(_ continue_: Bool, fetch: Bool) {
             guard carbs > 0 || fat > 0 || protein > 0 else {
                 showModal(for: nil)
                 return
@@ -40,18 +42,19 @@ extension AddCarbs {
             id_ = UUID().uuidString
 
             let carbsToStore = [CarbsEntry(
-                collectionID: id_,
-                createdAt: date,
+                id: id_,
+                createdAt: now,
+                actualDate: date,
                 carbs: carbs,
                 fat: fat,
                 protein: protein,
                 note: note,
                 enteredBy: CarbsEntry.manual,
-                isFPU: false, fpuID: nil
+                isFPU: false, fpuID: UUID().uuidString
             )]
             carbsStorage.storeCarbs(carbsToStore)
 
-            if skipBolus {
+            if skipBolus, !continue_, !fetch {
                 apsManager.determineBasalSync()
                 showModal(for: nil)
             } else if carbs > 0 {
@@ -140,16 +143,16 @@ extension AddCarbs {
             var addedString = ""
 
             if extracarbs > 0, filteredArray.isNotEmpty {
-                addedString += "Additional carbs: \(extracarbs) "
+                addedString += "Additional carbs: \(extracarbs) ,"
             } else if extracarbs < 0 { addedString += "Removed carbs: \(extracarbs) " }
 
             if extraFat > 0, filteredArray.isNotEmpty {
-                addedString += "Additional fat: \(extraFat) "
-            } else if extraFat < 0 { addedString += "Removed fat: \(extraFat) " }
+                addedString += "Additional fat: \(extraFat) ,"
+            } else if extraFat < 0 { addedString += "Removed fat: \(extraFat) ," }
 
             if extraProtein > 0, filteredArray.isNotEmpty {
-                addedString += "Additional protein: \(extraProtein) "
-            } else if extraProtein < 0 { addedString += "Removed protein: \(extraProtein) " }
+                addedString += "Additional protein: \(extraProtein) ,"
+            } else if extraProtein < 0 { addedString += "Removed protein: \(extraProtein) ," }
 
             if addedString != "" {
                 waitersNotepad.append(addedString)
@@ -170,7 +173,7 @@ extension AddCarbs {
 
         func loadEntries(_ editMode: Bool) {
             if editMode {
-                coredataContext.perform {
+                coredataContext.performAndWait {
                     var mealToEdit = [Meals]()
                     let requestMeal = Meals.fetchRequest() as NSFetchRequest<Meals>
                     let sortMeal = NSSortDescriptor(key: "createdAt", ascending: false)
@@ -188,15 +191,20 @@ extension AddCarbs {
         }
 
         func saveToCoreData(_ stored: [CarbsEntry]) {
-            let save = Meals(context: coredataContext)
-            save.createdAt = Date.now
-            save.id = stored.first?.collectionID ?? ""
-            save.carbs = Double(stored.first?.carbs ?? 0)
-            save.fat = Double(stored.first?.fat ?? 0)
-            save.protein = Double(stored.first?.protein ?? 0)
-            save.note = stored.first?.note ?? ""
-            if coredataContext.hasChanges {
-                try? coredataContext.save()
+            coredataContext.performAndWait {
+                let save = Meals(context: coredataContext)
+                if let entry = stored.first {
+                    save.createdAt = now
+                    save.actualDate = entry.actualDate ?? Date.now
+                    save.id = entry.id ?? ""
+                    save.fpuID = entry.fpuID ?? ""
+                    save.carbs = Double(entry.carbs)
+                    save.fat = Double(entry.fat ?? 0)
+                    save.protein = Double(entry.protein ?? 0)
+                    save.note = entry.note
+                    try? coredataContext.save()
+                }
+                print("meals 1: ID: " + (save.id ?? "").description + " FPU ID: " + (save.fpuID ?? "").description)
             }
         }
     }

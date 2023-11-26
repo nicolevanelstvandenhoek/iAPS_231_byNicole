@@ -1,5 +1,3 @@
-
-import CoreData
 import LoopKit
 import SwiftUI
 import Swinject
@@ -14,9 +12,8 @@ extension Bolus {
         @Injected() var settings: SettingsManager!
         @Injected() var nsManager: NightscoutManager!
 
-        let coredataContext = CoreDataStack.shared.persistentContainer.viewContext
-
         @Published var suggestion: Suggestion?
+        @Published var predictions: Predictions?
         @Published var amount: Decimal = 0
         @Published var insulinRecommended: Decimal = 0
         @Published var insulinRequired: Decimal = 0
@@ -60,7 +57,7 @@ extension Bolus {
         @Published var fattyMeals: Bool = false
         @Published var fattyMealFactor: Decimal = 0
         @Published var useFattyMealCorrectionFactor: Bool = false
-        @Published var eventualBG: Int = 0
+        @Published var displayPredictions: Bool = true
 
         @Published var meal: [CarbsEntry]?
         @Published var carbs: Decimal = 0
@@ -80,6 +77,7 @@ extension Bolus {
             useCalc = settings.settings.useCalc
             fattyMeals = settings.settings.fattyMeals
             fattyMealFactor = settings.settings.fattyMealFactor
+            displayPredictions = settings.settings.displayPredictions
 
             if waitForSuggestionInitial {
                 apsManager.determineBasal()
@@ -93,20 +91,25 @@ extension Bolus {
                         }
                     }.store(in: &lifetime)
             }
+            if let notNilSugguestion = provider.suggestion {
+                suggestion = notNilSugguestion
+                if let notNilPredictions = suggestion?.predictions {
+                    predictions = notNilPredictions
+                }
+            }
         }
 
         func getDeltaBG() {
             let glucose = provider.fetchGlucose()
             guard glucose.count >= 3 else { return }
-            let lastGlucose = glucose.last?.glucose ?? 0
-            let thirdLastGlucose = glucose[glucose.count - 3]
+            let lastGlucose = glucose.first?.glucose ?? 0
+            let thirdLastGlucose = glucose[2]
             let delta = Decimal(lastGlucose) - Decimal(thirdLastGlucose.glucose)
             deltaBG = delta
         }
 
         // CALCULATIONS FOR THE BOLUS CALCULATOR
         func calculateInsulin() -> Decimal {
-            // for mmol conversion
             var conversion: Decimal = 1.0
             if units == .mmolL {
                 conversion = 0.0555
@@ -220,25 +223,42 @@ extension Bolus {
             }
         }
 
-        func backToCarbsView(complexEntry: Bool, _ id: String) {
-            delete(deleteTwice: complexEntry, id: id)
-            showModal(for: .addCarbs(editMode: complexEntry))
+        func backToCarbsView(complexEntry: Bool, _ meal: FetchedResults<Meals>, override: Bool) {
+            delete(deleteTwice: complexEntry, meal: meal)
+            showModal(for: .addCarbs(editMode: complexEntry, override: override))
         }
 
-        func delete(deleteTwice: Bool, id: String) {
+        func delete(deleteTwice: Bool, meal: FetchedResults<Meals>) {
+            guard let meals = meal.first else {
+                return
+            }
+
+            var date = Date()
+
+            if let mealDate = meals.actualDate {
+                date = mealDate
+            } else if let mealdate = meals.createdAt {
+                date = mealdate
+            }
+
+            let mealArray = DataTable.Treatment(
+                units: units,
+                type: .carbs,
+                date: date,
+                id: meals.id ?? "",
+                isFPU: deleteTwice ? true : false,
+                fpuID: deleteTwice ? (meals.fpuID ?? "") : ""
+            )
+
+            print(
+                "meals 2: ID: " + mealArray.id.description + " FPU ID: " + (mealArray.fpuID ?? "")
+                    .description
+            )
+
             if deleteTwice {
-                // DispatchQueue.safeMainSync {
-                nsManager.deleteCarbs(
-                    at: id, isFPU: nil, fpuID: nil, syncID: id
-                )
-                nsManager.deleteCarbs(
-                    at: id + ".fpu", isFPU: nil, fpuID: nil, syncID: id
-                )
-                // }
+                nsManager.deleteCarbs(mealArray, complexMeal: true)
             } else {
-                nsManager.deleteCarbs(
-                    at: id, isFPU: nil, fpuID: nil, syncID: id
-                )
+                nsManager.deleteCarbs(mealArray, complexMeal: false)
             }
         }
     }

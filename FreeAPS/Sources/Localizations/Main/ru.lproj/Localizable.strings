@@ -56,37 +56,40 @@
 "Error at" = "Ошибка в";
 
 /* Bolus View Meal Summary Header */
-"Meal Summary" = "Meal Summary";
+"Meal Summary" = "Итог питания";
 
 /* Bolus View Meal Edit Meal Button */
-"Edit Meal" = "Edit Meal";
+"Edit Meal" = "Изменить еду";
 
 /* Bolus View Meal Add Meal Button */
-"Add Meal" = "Add Meal";
+"Add Meal" = "Добавить еду";
 
 /* Bolus View Bolus Summary Header */
-"Bolus Summary" = "Bolus Summary";
+"Bolus Summary" = "Болюс суммарно";
 
 /* For the  Bolus View pop-up */
-"Calculations" = "Calculations";
+"Calculations" = "Вычисления";
 
 /* For the  Bolus View pop-up */
-"Fatty Meal" = "Fatty Meal";
+"Fatty Meal" = "Жирная пища";
 
 /* For the  Bolus View pop-up */
-"Full Bolus" = "Full Bolus";
+"Full Bolus" = "Полный болюс";
 
 /* For the  Bolus View pop-up */
-"Fraction" = "Fraction";
+"Fraction" = "Доля";
 
 /* For the  Bolus View pop-up */
-"Fatty Meal Factor" = "Fatty Meal Factor";
+"Fatty Meal Factor" = "Фактор жирной пищи";
 
 /* For the  Bolus View pop-up */
-"Result" = "Result";
+"Result" = "Итого";
 
 /* For the  Bolus View pop-up */
-"Your entered amount was limited by your max Bolus setting of %d%@" = "Your entered amount was limited by your max Bolus setting of %d%@";
+"Your entered amount was limited by your max Bolus setting of %d%@" = "Доза была ограничена Вашей настройкой максимального болюса в размере %d%@";
+
+/* Bolus View Continue Button */
+"Continue" = "Продолжить";
 
 /* Home title */
 "Home" = "Главная";
@@ -117,6 +120,9 @@
 
 /*  */
 "Carbs required" = "Требуются углеводы";
+
+/* Saved Food Presets */
+"Saved Food" = "Сохранённая еда";
 
 /* */
 "Are you sure?" = "Вы уверены?";
@@ -570,10 +576,10 @@ Enact a temp Basal or a temp target */
 "Temp Targets" = "Временные цели";
 
 /* Delete carbs from data table and Nightscout */
-"Delete carbs?" = "Удалить углеводы?";
+"Delete Carbs?" = "Удалить углеводы?";
 
 /* Delete insulin from pump history and Nightscout */
-"Delete insulin?" = "Удалить инсулин?";
+"Delete Insulin?" = "Удалить инсулин?";
 
 /* Treatments list */
 "Treatments" = "События";
@@ -603,7 +609,7 @@ Enact a temp Basal or a temp target */
 "Automatic" = "Автоматически";
 
 /* External insulin treatments */
-"External" = "External";
+"External" = "Внешний";
 
 /* */
 "Other" = "Прочее";
@@ -1208,7 +1214,7 @@ Enact a temp Basal or a temp target */
 "SMB" = "SMB";
 
 /* A manually entered dose of external insulin */
-"External Insulin" = "External Insulin";
+"External Insulin" = "Внешний инсулин";
 
 /* Status highlight when manual temp basal is running. */
 "Manual Basal" = "Ручная ВБС";
@@ -1362,7 +1368,13 @@ Enact a temp Basal or a temp target */
 "Statistics and Home View" = "Статистика и экран";
 
 /* Alert text */
-"Delete carb equivalents?" = "Удалить эквиваленты углеводов?";
+"Delete Carb Equivalents?" = "Удалить эквиваленты углеводов?";
+
+/* */
+"All FPUs of the meal will be deleted." = "Все пищевые единицы будут удалены.";
+
+/* */
+"Delete Glucose?" = "Удалить глюкозу?";
 
 /* */
 "Meal Presets" = "Шаблоны";
@@ -1385,6 +1397,12 @@ Enact a temp Basal or a temp target */
 /* */
 "Save as Preset" = "Сохранить как шаблон";
 
+/* */
+"Predictions" = "Прогноз";
+
+/* Watch Config Option */
+"Display Protein & Fat" = "Отображать белки и жиры";
+
 /* ----------------------- New Bolus Calculator ---------------------------*/
 /* Warning about bolus recommendation. Title */
 
@@ -1395,6 +1413,12 @@ Enact a temp Basal or a temp target */
 
 /* */
 "Eventual Glucose" = "Возможная глюкоза";
+
+/* */
+"Please wait" = "Подождите";
+
+/* */
+"Glucose, " = "Глюкоза, ";
 
 /* */
 "Target Glucose" = "Целевая глюкоза";
@@ -1462,7 +1486,7 @@ Enact a temp Basal or a temp target */
 /* Text for confidence reminders navigation link */
 "Confidence Reminders" = "Напоминания о верификации";
 
-"Confidence reminders are beeps from the pod which can be used to acknowledge selected commands." = "Доверенные звуковые сигналы от Пода, которые позволяют распознать выбранные команды.";
+"Confidence reminders are beeps from the Pod which can be used to acknowledge selected commands when the Pod is not silenced." = "Доверенные звуковые сигналы от Пода, которые позволяют распознать выбранные команды, когда Под не заглушен.";
 
 /* button title for saving low reservoir reminder while saving */
 "Saving..." = "Сохранение...";
@@ -1492,10 +1516,10 @@ Enact a temp Basal or a temp target */
 "No confidence reminders are used." = "Доверенные звуковые сигналы не используются.";
 
 /* Description for BeepPreference.manualCommands */
-"Confidence reminders will sound for commands you initiate, like bolus, cancel bolus, suspend, resume, save notification reminders, etc. When Loop automatically adjusts delivery, no confidence reminders are used." = "Доверенные звуковые сигналы сработают для операций, которые Вы инициируете - Болюс, Отмена Болюса, Приостановка подачи, Возобновление подачи, Сохранение напоминаний и т.д. Когда петля автоматически меняет подачу инсулина - звуковые сигналы не используются.";
+"Confidence reminders will sound for commands you initiate, like bolus, cancel bolus, suspend, resume, save notification reminders, etc. When the app automatically adjusts delivery, no confidence reminders are used." = "Доверенные звуковые сигналы сработают для операций, которые Вы инициируете - Болюс, Отмена Болюса, Приостановка подачи, Возобновление подачи, Сохранение напоминаний и т. д. Когда петля автоматически меняет подачу инсулина - звуковые сигналы не используются.";
 
 /* Description for BeepPreference.extended */
-"Confidence reminders will sound when Loop automatically adjusts delivery as well as for commands you initiate." = "Доверенные звуковые сигналы сработают даже тогда, когда петля автоматически изменит подачу инсулина, а также для команд, которые Вы инициируете.";
+"Confidence reminders will sound when the app automatically adjusts delivery as well as for commands you initiate." = "Доверенные звуковые сигналы сработают даже тогда, когда петля автоматически изменит подачу инсулина, а также для команд, которые Вы инициируете.";
 
 /* Label text for expiration reminder default row */
 "Expiration Reminder Default" = "Напоминание об истечении срока";
@@ -1633,6 +1657,21 @@ Enact a temp Basal or a temp target */
 
 /* */
 "Hours X-Axis (6 default)" = "Ширина графика по оси X (6 по-умолчанию)";
+
+/* */
+"2 hours" = "2 часа";
+
+/* */
+"4 hours" = "4 часа";
+
+/* */
+"6 hours" = "6 часов";
+
+/* */
+"12 hours" = "12 часов";
+
+/* */
+"24 hours" = "24 часа";
 
 /* Average BG = */
 "Average" = "Средний";
