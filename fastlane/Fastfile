@@ -55,10 +55,10 @@ platform :ios do
       type: "appstore",
       git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
       app_identifier: [
-        "ru.artpancreas.#{TEAMID}.FreeAPS",
-        "ru.artpancreas.#{TEAMID}.FreeAPS.watchkitapp",
-        "ru.artpancreas.#{TEAMID}.FreeAPS.watchkitapp.watchkitextension",
-        "ru.artpancreas.#{TEAMID}.FreeAPS.LiveActivity"
+        "ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev",
+        "ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev.watchkitapp",
+        "ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev.watchkitapp.watchkitextension",
+        "ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev.LiveActivity"
       ]
     )
 
@@ -100,7 +100,7 @@ platform :ios do
     )
     update_code_signing_settings(
       path: "#{GITHUB_WORKSPACE}/FreeAPS.xcodeproj",
-      profile_name: mapping["ru.artpancreas.#{TEAMID}.FreeAPS.LiveActivity"],
+      profile_name: mapping["ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev.LiveActivity"],
       code_sign_identity: "iPhone Distribution",
       targets: ["LiveActivityExtension"]
     )
@@ -170,7 +170,7 @@ platform :ios do
       Spaceship::ConnectAPI::BundleIdCapability::Type::APP_GROUPS
     ])
 
-    configure_bundle_id("LiveActivityExtension", "ru.artpancreas.#{TEAMID}.FreeAPS.LiveActivity", [
+    configure_bundle_id("LiveActivityExtension", "ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev.LiveActivity", [
       Spaceship::ConnectAPI::BundleIdCapability::Type::APP_GROUPS
     ])
     
@@ -192,10 +192,10 @@ platform :ios do
       force: true,
       git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
       app_identifier: [
-        "ru.artpancreas.#{TEAMID}.FreeAPS",
-        "ru.artpancreas.#{TEAMID}.FreeAPS.watchkitapp.watchkitextension",
-        "ru.artpancreas.#{TEAMID}.FreeAPS.watchkitapp",
-        "ru.artpancreas.#{TEAMID}.FreeAPS.LiveActivity"
+        "ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev",
+        "ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev.watchkitapp.watchkitextension",
+        "ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev.watchkitapp",
+        "ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev.LiveActivity"
       ]
     )
   end
@@ -215,7 +215,7 @@ platform :ios do
       bundle_id = Spaceship::ConnectAPI::BundleId.find(identifier)
     end
 
-    find_bundle_id("ru.artpancreas.#{TEAMID}.FreeAPS")
+    find_bundle_id("ru.artpancreas.#{TEAMID}.FreeAPS-iAPSdev")
 
     match(
       type: "appstore",
